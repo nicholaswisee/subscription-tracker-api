@@ -73,7 +73,7 @@ export const signIn = async (req, res, next) => {
         });
 
         res.status(200).json({
-            succes: true,
+            success: true,
             message: "User signed in successfully",
             data: {
                 token,
