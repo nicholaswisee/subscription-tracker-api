@@ -13,7 +13,7 @@ const app = express();
 app.use(express.json()); // process JSON data
 app.use(express.urlencoded({ extended: false })); // process form data from HTML forms
 app.use(cookieParser());
-// app.use(arcjetMiddleware);
+app.use(arcjetMiddleware);
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
