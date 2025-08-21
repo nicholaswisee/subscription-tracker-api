@@ -2,6 +2,15 @@ import { SERVER_URL } from "../config/env.js";
 import { workflowClient } from "../config/upstash.js";
 import Subscription from "../models/subscription.model.js";
 
+export const getSubscriptions = async (req, res, next) => {
+    try {
+        const subscriptions = await Subscription.find();
+        res.status(200).json({ success: true, data: subscriptions });
+    } catch (err) {
+        next(err);
+    }
+};
+
 export const createSubscription = async (req, res, next) => {
     try {
         const subscription = await Subscription.create({
@@ -20,28 +29,28 @@ export const createSubscription = async (req, res, next) => {
             retries: 0,
         });
 
-        return res
-            .status(201)
-            .json({ success: true, data: { subscription, workflowRunId } });
-    } catch (err) {
-        next(err);
+        res.status(201).json({
+            success: true,
+            data: { subscription, workflowRunId },
+        });
+    } catch (e) {
+        next(e);
     }
 };
 
 export const getUserSubscriptions = async (req, res, next) => {
     try {
-        // User may only get their own subscriptions
+        // Check if the user is the same as the one in the token
         if (req.user.id !== req.params.id) {
-            const error = new Error(
-                "You may only access your own subscriptions."
-            );
+            const error = new Error("You are not the owner of this account");
             error.status = 401;
             throw error;
         }
 
         const subscriptions = await Subscription.find({ user: req.params.id });
+
         res.status(200).json({ success: true, data: subscriptions });
-    } catch (err) {
-        next(err);
+    } catch (e) {
+        next(e);
     }
 };
